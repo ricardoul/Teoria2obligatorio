@@ -5,6 +5,7 @@ import java.util.*;
 import java_cup.runtime.Symbol;
 
 parser code {:
+
 	
 	public static Lexer makeLexer(String input) throws Exception {
 		return new Lexer(new StringReader(input));
@@ -20,7 +21,6 @@ parser code {:
 		return result.value;
 	}
 	
-	
 :}
 
 // Rules Data
@@ -29,14 +29,22 @@ terminal String STRING, TAG;
 terminal Double DOUBLE;
 terminal Boolean TRUE;
 terminal Boolean FALSE;
+terminal CONCAT, REGEX, SLASH, INTER, SUBSTRACT, UNION, TILDE, SPACES, DOT, ROOT;
 
 non terminal Value;
 non terminal ArrayList QElement;
 non terminal Map<String, Object> QAttribute;
-non terminal QObject QComponents, QObject;
+non terminal QObject QComponents, QObject, QQuery, QProgram, Expressions, Expression;
+precedence left UNION, CONCAT, SUBSTRACT,INTER, TILDE;
 // Rules Consultas
 
 //Data
+QProgram ::= QObject:q
+  			{:	RESULT = q; :}
+  			| QQuery:q
+  			{:	RESULT = q; :}
+  		;
+  		
 
 QObject ::= TAG:t L_BRACKET QComponents:qes R_BRACKET
   			{:System.out.println("Ae"); RESULT = qes;  RESULT.setTag(t);System.out.println(RESULT.toString()); :}
@@ -76,4 +84,34 @@ Value ::= TRUE:t
 		| QObject:qo
   			{: RESULT = qo;  :} 
 		;
+		
+		//Consultas
+		
+QQuery::= ROOT Expressions
+	{: RESULT = t; :}  ;
+
+Expressions ::= Expression:ex
+  		{: :}
+  		|  Expression:e  Expressions:exs
+  			{:  :}
+  		;
+  		
+Expression ::= Expression:e1 CONCAT
+			{: RESULT = QQuery.; :} 
+		| Expression:e1 UNION  
+			{: RESULT = f; :}
+		| Expression:e1 SUBSTRACT  
+			{: RESULT = f; :}
+		| Expression:e1 INTER
+			{: RESULT = f; :}
+		| TILDE
+			{: RESULT = f; :}
+		| SLASH
+			{: RESULT = f; :}
+		|  DOT
+			{: RESULT = f; :}		
+		| TAG:t
+			{: RESULT = f; :}	
+		;
+
 					

@@ -7,7 +7,7 @@ import java.util.Map;
 public class QObject {
 	String tag;
 	Map<String,Object> attributes;
-	ArrayList<Object> elements;
+	ArrayList<QObject> elements;
 	
 	public String getTag() {
 		return tag;
@@ -26,11 +26,11 @@ public class QObject {
 		this.attributes = attributes;
 	}
 
-	public ArrayList<Object> getElements() {
+	public ArrayList<QObject> getElements() {
 		return elements;
 	}
 
-	public void addElements(ArrayList<Object> elements) {
+	public void addElements(ArrayList<QObject> elements) {
 		this.elements.addAll(elements);
 	}
 	
@@ -38,14 +38,14 @@ public class QObject {
 		this.attributes.putAll(attributes);
 	}
 	
-	public void setElements(ArrayList<Object> elements) {
+	public void setElements(ArrayList<QObject> elements) {
 		this.elements = elements;
 	}
 	public QObject(){
 		super();
 		System.out.println("entro constructor vacio");
 	}
-	public QObject(String tag, Map<String, Object> attributes, ArrayList<Object> elements) {
+	public QObject(String tag, Map<String, Object> attributes, ArrayList<QObject> elements) {
 		super();
 		this.tag = tag;
 		this.attributes = attributes;

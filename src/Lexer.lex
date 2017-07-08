@@ -21,6 +21,13 @@ NULL {return new Symbol(NULL, yytext());}
 [(] {return new Symbol(L_BRACKET, yytext());}
 [)] {return new Symbol(R_BRACKET, yytext());}
 [,] {return new Symbol(COMMA, yytext());}
+[$] {return new Symbol(ROOT, yytext());}
+[\/] {return new Symbol(SLASH, yytext());}
+[&] {return new Symbol(INTER, yytext());}
+[|] {return new Symbol(UNION, yytext());}
+[+] {return new Symbol(CONCAT, yytext());}
+[-] {return new Symbol(SUBSTRACT, yytext());}
+[~] {return new Symbol(TILDE, yytext());}
 (TRUE|true)	{ return new Symbol(TRUE, true); }
 (FALSE|false)	{ return new Symbol(FALSE, false); }
 \"[^\"\n]*\" {return new Symbol(STRING, yytext());}
