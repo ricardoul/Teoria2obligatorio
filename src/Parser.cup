@@ -1,0 +1,79 @@
+package lang.parser;
+
+import java.io.*;
+import java.util.*;
+import java_cup.runtime.Symbol;
+
+parser code {:
+	
+	public static Lexer makeLexer(String input) throws Exception {
+		return new Lexer(new StringReader(input));
+	}
+	
+	public static Parser makeParser(String input) throws Exception {
+		return new Parser(makeLexer(input));
+	}
+	
+	public static Object parseString(String input) throws Exception {
+		Parser parser = Parser.makeParser(input);
+		Symbol result = parser.parse();
+		return result.value;
+	}
+	
+	
+:}
+
+// Rules Data
+terminal L_BRACKET, R_BRACKET, COMMA, COLON, NULL;
+terminal String STRING, TAG;
+terminal Double DOUBLE;
+terminal Boolean TRUE;
+terminal Boolean FALSE;
+
+non terminal Value;
+non terminal ArrayList QElement;
+non terminal Map<String, Object> QAttribute;
+non terminal QObject QComponents, QObject;
+// Rules Consultas
+
+//Data
+
+QObject ::= TAG:t L_BRACKET QComponents:qes R_BRACKET
+  			{:System.out.println("Ae"); RESULT = qes;  RESULT.setTag(t);System.out.println(RESULT.toString()); :}
+  			| TAG:t L_BRACKET R_BRACKET
+  			{: System.out.println("Entro qelement vacio");RESULT = new QObject(); RESULT.setTag(t); :}
+  		;
+  
+QComponents ::= QElement:qe
+  		{: System.out.println("Entro qelement");RESULT = new QObject(); RESULT.setElements(qe); :}
+  		| QAttribute:qa
+  			{:System.out.println("Ab"); RESULT = new QObject(); RESULT.setAttributes(qa); System.out.println(RESULT.toString()); :}
+  		| QElement:qe COMMA QComponents:qc
+  			{:  RESULT=qc; RESULT.addElements(qe);  :}
+  		| QAttribute:qa COMMA QComponents:qc
+  			{: System.out.println("Ac"); RESULT=qc; RESULT.addAttributes(qa); :}
+  		;
+  				
+QElement ::= Value:v //Arreglar que no tome otros valores como string
+			{: RESULT = new ArrayList(); RESULT.add(v); :}	   
+		;
+QAttribute ::=  TAG:s COLON Value:v 
+  			{: System.out.println("Ad");RESULT = new HashMap<String, Object>(); 
+				RESULT.put(s,v); :} 
+		;
+		
+				
+Value ::= TRUE:t
+			{: RESULT = t; :}  
+		| FALSE:f
+			{: RESULT = f; :}
+		| DOUBLE:d
+		  	{: RESULT = d; :}  
+		| STRING:s
+		  	{: RESULT = s; :}  
+		| NULL
+		  	{: RESULT = null; :}
+		| QObject:qo
+  			{: RESULT = qo;  :} 
+		;
+					
