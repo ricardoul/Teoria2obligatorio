@@ -10,6 +10,7 @@ import lang.parser.Parser;
 import lang.parser.QObject;
 import lang.parser.Tokens;
 
+
 public class BasicTests extends TestCase {
 	
 	public static void showTokens(String input) throws Exception {
@@ -25,8 +26,8 @@ public class BasicTests extends TestCase {
 	public void test1() throws Exception {
 		String input = "List(algo(id:\"a\",a:sist(id:1)))";
 		//String input2 = "List(Company(id:1,name:\"Google\",Person(id: 1, name: \"Larry Page\"),Person(id: 2,name: \" Serguéi Brin\") ),Company( /* id, name at the end */ Person(id: 1,name: \"Lawrence J. Ellison\"),Person(id: 2, name: \"Bob Miner\"),Person(id: 3, name: \"Ed Oates\"), id: 2, name: \"Oracle\" ))";
-		showTokens(input);
-		QObject qobj = (QObject) Parser.parseString(input);
+		//showTokens(input);
+		Expression qobj = (Expression) Parser.parseString(input);
 		System.out.println(qobj.toString()+ "hola");
 		assertEquals(qobj, 1);
 		
@@ -42,7 +43,7 @@ public class BasicTests extends TestCase {
 	
 	public void testList() throws Exception {
 		ArrayList aux = new ArrayList();
-		String input = "$List.()$/&|+-~";
+		String input = "$List.";
 		showTokens(input);
 		Expression qobj =  (Expression) Parser.parseString(input);
 		aux.add(qobj);

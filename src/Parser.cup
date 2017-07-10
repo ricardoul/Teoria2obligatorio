@@ -22,17 +22,84 @@ parser code {:
 	}
 	
 :}
+// Rules Consultas
 
+
+non terminal QObject QObject, QComponents;
+non terminal Expression QProgram;
+non terminal ArrayList QElement;
+non terminal Map<String,Object> QAttribute;
+non terminal Object Value;
+terminal COMMA, COLON, NULL;
+terminal String IDS;
+terminal Boolean TRUE, FALSE;
+terminal Double DOUBLE;
+
+//PARTE 2
 // Rules Data 
 terminal ROOT, L_BRACKET, R_BRACKET, CONCAT, UNION, DIFFERENCE, INTERSECT, SLASH, DOT,TILDE;
-terminal String IDS, STRING;
+terminal String STRING;
 non terminal Expression QQuery;
 non terminal QObject Qobject;
 non terminal Expression expression;
 precedence left UNION, CONCAT, DIFFERENCE, INTERSECT;
 precedence left TILDE, SLASH, DOT;
 
+//PARTE 1
 
+
+
+
+
+//Data
+QProgram ::= QObject:q
+  			{:	RESULT = new Expression(q); Singleton.addData(q); :}
+  			| QQuery:q
+  			{:	RESULT = q; :}
+  		;
+  		
+
+QObject ::= IDS:t L_BRACKET QComponents:qes R_BRACKET
+  			{:System.out.println("Ae"); RESULT = qes;  RESULT.setTag(t);System.out.println(RESULT.toString()); :}
+  			| IDS:t L_BRACKET R_BRACKET
+  			{: System.out.println("Entro qelement vacio");RESULT = new QObject(); RESULT.setTag(t); :}
+  		;
+  
+QComponents ::= QElement:qe
+  		{: System.out.println("Entro qelement");RESULT = new QObject(); RESULT.setElements(qe); :}
+  		| QAttribute:qa
+  			{:System.out.println("Ab"); RESULT = new QObject(); RESULT.setAttributes(qa); System.out.println(RESULT.toString()); :}
+  		| QElement:qe COMMA QComponents:qc
+  			{:  RESULT=qc; RESULT.addElements(qe);  :}
+  		| QAttribute:qa COMMA QComponents:qc
+  			{: System.out.println("Ac"); RESULT=qc; RESULT.addAttributes(qa); :}
+  		;
+  				
+QElement ::= Value:v //Arreglar que no tome otros valores como string
+			{: RESULT = new ArrayList(); RESULT.add(v); :}	   
+		;
+QAttribute ::=  IDS:s COLON Value:v 
+  			{: System.out.println("Ad");RESULT = new HashMap<String, Object>(); 
+				RESULT.put(s,v); :} 
+		;
+		
+				
+Value ::= TRUE:t
+			{: RESULT = t; :}  
+		| FALSE:f
+			{: RESULT = f; :}
+		| DOUBLE:d
+		  	{: RESULT = d; :}  
+		| STRING:s
+		  	{: RESULT = s; :}  
+		| NULL
+		  	{: RESULT = null; :}
+		| QObject:qo
+  			{: RESULT = qo;  :} 
+		;
+
+
+//FIN PARTE 1
 //Consultas
 QQuery ::= ROOT expression:e
   			{: RESULT = e; :} 

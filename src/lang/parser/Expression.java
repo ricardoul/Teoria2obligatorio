@@ -21,6 +21,13 @@ public class Expression {
 		this.qobjects = qobjects;
 		this.qattributes = qattributes;
 	}
+	
+	public Expression(QObject qobject) {
+		super();
+		this.qobjects = new ArrayList();
+		qobjects.add(qobject);
+		this.qattributes = null;
+	}
 
 
 	public void setQobjects(ArrayList<QObject> qobjects) {
