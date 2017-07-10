@@ -6,19 +6,22 @@ import java.util.Map;
 
 public class Singleton {
 
-	public static ArrayList<QObject> rootData = new ArrayList<QObject>();
+	public static Expression rootData = new Expression();
 	
 
-	public static ArrayList<QObject> getRootData() {
+	public static Expression getRootData() {
 		return rootData;
 	}
-	public static void setRootData(ArrayList<QObject> rootData) {
+	public static void setRootData(Expression rootData) {
 		Singleton.rootData = rootData;
 	}
-	public static ArrayList<QObject> getData( ) {
+	
+	public static void setRootData(QObject rootData) {
+		Singleton.rootData = new Expression(rootData);
+	}
+	
+	public static Expression getData( ) {
 		return rootData;
 	}
-	public static void addData(QObject data){
-		rootData.add(data);
-	}
+
 }

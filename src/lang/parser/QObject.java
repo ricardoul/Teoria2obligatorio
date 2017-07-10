@@ -51,7 +51,6 @@ public class QObject {
 	}
 
 	public void setTag(String tag) {
-		System.out.println("entro tag"+tag);
 		this.tag = tag;
 	}
 
@@ -80,7 +79,6 @@ public class QObject {
 	}
 	public QObject(){
 		super();
-		System.out.println("entro constructor vacio");
 	}
 	public QObject(String tag, Map<String, Object> attributes, ArrayList<QObject> elements) {
 		super();

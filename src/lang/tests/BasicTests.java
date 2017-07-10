@@ -13,6 +13,15 @@ import lang.parser.Tokens;
 
 public class BasicTests extends TestCase {
 	
+	
+		
+	 public  void createData() throws Exception{
+		String input = "List(algo(id:\"a\",a:sist(id:1)))";
+		//String input2 = "List(Company(id:1,name:\"Google\",Person(id: 1, name: \"Larry Page\"),Person(id: 2,name: \" Serguéi Brin\") ),Company( /* id, name at the end */ Person(id: 1,name: \"Lawrence J. Ellison\"),Person(id: 2, name: \"Bob Miner\"),Person(id: 3, name: \"Ed Oates\"), id: 2, name: \"Oracle\" ))";
+		//showTokens(input);
+		Expression qobj = (Expression) Parser.parseString(input);
+	}
+	
 	public static void showTokens(String input) throws Exception {
 	Lexer lexer = Parser.makeLexer(input);
 	Symbol token = lexer.next_token();
@@ -28,7 +37,6 @@ public class BasicTests extends TestCase {
 		//String input2 = "List(Company(id:1,name:\"Google\",Person(id: 1, name: \"Larry Page\"),Person(id: 2,name: \" Serguéi Brin\") ),Company( /* id, name at the end */ Person(id: 1,name: \"Lawrence J. Ellison\"),Person(id: 2, name: \"Bob Miner\"),Person(id: 3, name: \"Ed Oates\"), id: 2, name: \"Oracle\" ))";
 		//showTokens(input);
 		Expression qobj = (Expression) Parser.parseString(input);
-		System.out.println(qobj.toString()+ "hola");
 		assertEquals(qobj, 1);
 		
 	}
@@ -42,12 +50,14 @@ public class BasicTests extends TestCase {
 	}
 	
 	public void testList() throws Exception {
+		createData();
 		ArrayList aux = new ArrayList();
-		String input = "$List.";
+		String input = "$/";
 		showTokens(input);
 		Expression qobj =  (Expression) Parser.parseString(input);
 		aux.add(qobj);
-		assertEquals(qobj, 1);
+		System.out.println(qobj.toString());
+		//assertEquals(qobj, 1);
 	}
 	
 	public void testIntersection(){

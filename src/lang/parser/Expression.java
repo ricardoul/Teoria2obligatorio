@@ -7,6 +7,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Expression {
+	
+	@Override
+	public String toString() {
+		return "Expression [qobjects=" + qobjects + ", qattributes=" + qattributes + "]";
+	}
+
 	ArrayList<QObject> qobjects;
 	ArrayList<QAttribute> qattributes;
 	

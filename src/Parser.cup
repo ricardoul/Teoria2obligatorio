@@ -37,13 +37,12 @@ terminal Double DOUBLE;
 
 //PARTE 2
 // Rules Data 
-terminal ROOT, L_BRACKET, R_BRACKET, CONCAT, UNION, DIFFERENCE, INTERSECT, SLASH, DOT,TILDE;
+terminal ROOT, L_BRACKET, R_BRACKET, CONCAT, UNION, DIFFERENCE, INTERSECT, SLASH, DOT,VIBORA;
 terminal String STRING;
 non terminal Expression QQuery;
-non terminal QObject Qobject;
 non terminal Expression expression;
 precedence left UNION, CONCAT, DIFFERENCE, INTERSECT;
-precedence left TILDE, SLASH, DOT;
+precedence left VIBORA, SLASH, DOT;
 
 //PARTE 1
 
@@ -53,33 +52,33 @@ precedence left TILDE, SLASH, DOT;
 
 //Data
 QProgram ::= QObject:q
-  			{:	RESULT = new Expression(q); Singleton.addData(q); :}
+  			{:	RESULT = new Expression(q); Singleton.setRootData(q); :}
   			| QQuery:q
   			{:	RESULT = q; :}
   		;
   		
 
 QObject ::= IDS:t L_BRACKET QComponents:qes R_BRACKET
-  			{:System.out.println("Ae"); RESULT = qes;  RESULT.setTag(t);System.out.println(RESULT.toString()); :}
+  			{: RESULT = qes;  RESULT.setTag(t);:}
   			| IDS:t L_BRACKET R_BRACKET
-  			{: System.out.println("Entro qelement vacio");RESULT = new QObject(); RESULT.setTag(t); :}
+  			{:RESULT = new QObject(); RESULT.setTag(t); :}
   		;
   
 QComponents ::= QElement:qe
-  		{: System.out.println("Entro qelement");RESULT = new QObject(); RESULT.setElements(qe); :}
+  		{: RESULT = new QObject(); RESULT.setElements(qe); :}
   		| QAttribute:qa
-  			{:System.out.println("Ab"); RESULT = new QObject(); RESULT.setAttributes(qa); System.out.println(RESULT.toString()); :}
+  			{: RESULT = new QObject(); RESULT.setAttributes(qa);  :}
   		| QElement:qe COMMA QComponents:qc
   			{:  RESULT=qc; RESULT.addElements(qe);  :}
   		| QAttribute:qa COMMA QComponents:qc
-  			{: System.out.println("Ac"); RESULT=qc; RESULT.addAttributes(qa); :}
+  			{:  RESULT=qc; RESULT.addAttributes(qa); :}
   		;
   				
 QElement ::= Value:v //Arreglar que no tome otros valores como string
 			{: RESULT = new ArrayList(); RESULT.add(v); :}	   
 		;
 QAttribute ::=  IDS:s COLON Value:v 
-  			{: System.out.println("Ad");RESULT = new HashMap<String, Object>(); 
+  			{: RESULT = new HashMap<String, Object>(); 
 				RESULT.put(s,v); :} 
 		;
 		
@@ -104,7 +103,7 @@ Value ::= TRUE:t
 QQuery ::= ROOT expression:e
   			{: RESULT = e; :} 
   		| ROOT
-  		{: RESULT = new Expression(Singleton.getData(), null); :} 
+  		{: RESULT = Singleton.getData(); :} 
 		;
 
 expression ::= L_BRACKET expression:e R_BRACKET
@@ -117,14 +116,12 @@ expression ::= L_BRACKET expression:e R_BRACKET
 			{: RESULT = new Expression(); RESULT.difference(e1,e2); :}
 		| expression:e1 INTERSECT expression:e2
 			{: RESULT = new Expression(); RESULT.intersect(e1,e2); :}
-		| expression:e SLASH
-			{: RESULT = new Expression(); RESULT.slash(e); :} 
-		| expression:e DOT
-			{: RESULT = new Expression(); RESULT.dot(e); :}
-		| expression:e IDS:s
-			{: RESULT = new Expression(); RESULT.searchTag(e, s); :} 
-		| expression:e TILDE IDS:s  //Agregar para que soprte cosas que no esten entre comillas
+		| SLASH
+			{: RESULT = new Expression(); RESULT.slash(Singleton.getRootData()); :} 
+		|  DOT
+			{: RESULT = new Expression(); RESULT.dot(Singleton.getRootData()); :}
+		|  IDS:s
+			{: RESULT = new Expression(); RESULT.searchTag(Singleton.getRootData(), s); :} 
+		| expression:e VIBORA IDS:s  //Agregar para que soprte cosas que no esten entre comillas
 			{: RESULT = new Expression(); RESULT.searchRegex(e, s); :}
-		| Qobject:qo
-			{: RESULT = new Expression(); RESULT.addQobjects(qo); :} 
 		;
