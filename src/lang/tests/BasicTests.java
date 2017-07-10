@@ -4,10 +4,10 @@ import java.util.*;
 
 import java_cup.runtime.Symbol;
 import junit.framework.TestCase;
+import lang.parser.Expression;
 import lang.parser.Lexer;
 import lang.parser.Parser;
 import lang.parser.QObject;
-import lang.parser.QQuery;
 import lang.parser.Tokens;
 
 public class BasicTests extends TestCase {
@@ -32,13 +32,21 @@ public class BasicTests extends TestCase {
 		
 	}
 	
-	public void testRegexTag() throws Exception {
+	public void testOnlyRoot() throws Exception {
 		ArrayList aux = new ArrayList();
-		String input = "List(algo(id:\"a\",a:sist(id:1)))";
-		QObject qobj = (QObject) Parser.parseString(input);
+		String input = "$";
+		Expression qobj =  (Expression) Parser.parseString(input);
 		aux.add(qobj);
-		QQuery.actualContext = aux;
-		QQuery.filterByRegex("a+");
+		assertEquals(qobj, 1);
+	}
+	
+	public void testList() throws Exception {
+		ArrayList aux = new ArrayList();
+		String input = "$List.()$/&|+-~";
+		showTokens(input);
+		Expression qobj =  (Expression) Parser.parseString(input);
+		aux.add(qobj);
+		assertEquals(qobj, 1);
 	}
 	
 	public void testIntersection(){
@@ -47,7 +55,7 @@ public class BasicTests extends TestCase {
 		a.add(2);
 		List b = new ArrayList();
 		b.add(1);
-		assertEquals(QQuery.intersect(a,b), b);
+		
 	}
 	
 

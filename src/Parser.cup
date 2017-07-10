@@ -18,100 +18,46 @@ parser code {:
 	public static Object parseString(String input) throws Exception {
 		Parser parser = Parser.makeParser(input);
 		Symbol result = parser.parse();
-		return result.value;
+		return result.value; 
 	}
 	
 :}
 
-// Rules Data
-terminal L_BRACKET, R_BRACKET, COMMA, COLON, NULL;
-terminal String STRING, TAG;
-terminal Double DOUBLE;
-terminal Boolean TRUE;
-terminal Boolean FALSE;
-terminal CONCAT, REGEX, SLASH, INTER, SUBSTRACT, UNION, TILDE, SPACES, DOT, ROOT;
+// Rules Data 
+terminal ROOT, L_BRACKET, R_BRACKET, CONCAT, UNION, DIFFERENCE, INTERSECT, SLASH, DOT,TILDE;
+terminal String IDS, STRING;
+non terminal Expression QQuery;
+non terminal QObject Qobject;
+non terminal Expression expression;
+precedence left UNION, CONCAT, DIFFERENCE, INTERSECT;
+precedence left TILDE, SLASH, DOT;
 
-non terminal Value;
-non terminal ArrayList QElement;
-non terminal Map<String, Object> QAttribute;
-non terminal QObject QComponents, QObject, QQuery, QProgram, Expressions, Expression;
-precedence left UNION, CONCAT, SUBSTRACT,INTER, TILDE;
-// Rules Consultas
 
-//Data
-QProgram ::= QObject:q
-  			{:	RESULT = q; :}
-  			| QQuery:q
-  			{:	RESULT = q; :}
-  		;
-  		
-
-QObject ::= TAG:t L_BRACKET QComponents:qes R_BRACKET
-  			{:System.out.println("Ae"); RESULT = qes;  RESULT.setTag(t);System.out.println(RESULT.toString()); :}
-  			| TAG:t L_BRACKET R_BRACKET
-  			{: System.out.println("Entro qelement vacio");RESULT = new QObject(); RESULT.setTag(t); :}
-  		;
-  
-QComponents ::= QElement:qe
-  		{: System.out.println("Entro qelement");RESULT = new QObject(); RESULT.setElements(qe); :}
-  		| QAttribute:qa
-  			{:System.out.println("Ab"); RESULT = new QObject(); RESULT.setAttributes(qa); System.out.println(RESULT.toString()); :}
-  		| QElement:qe COMMA QComponents:qc
-  			{:  RESULT=qc; RESULT.addElements(qe);  :}
-  		| QAttribute:qa COMMA QComponents:qc
-  			{: System.out.println("Ac"); RESULT=qc; RESULT.addAttributes(qa); :}
-  		;
-  				
-QElement ::= Value:v //Arreglar que no tome otros valores como string
-			{: RESULT = new ArrayList(); RESULT.add(v); :}	   
-		;
-QAttribute ::=  TAG:s COLON Value:v 
-  			{: System.out.println("Ad");RESULT = new HashMap<String, Object>(); 
-				RESULT.put(s,v); :} 
-		;
-		
-				
-Value ::= TRUE:t
-			{: RESULT = t; :}  
-		| FALSE:f
-			{: RESULT = f; :}
-		| DOUBLE:d
-		  	{: RESULT = d; :}  
-		| STRING:s
-		  	{: RESULT = s; :}  
-		| NULL
-		  	{: RESULT = null; :}
-		| QObject:qo
-  			{: RESULT = qo;  :} 
-		;
-		
-		//Consultas
-		
-QQuery::= ROOT Expressions
-	{: RESULT = t; :}  ;
-
-Expressions ::= Expression:ex
-  		{: :}
-  		|  Expression:e  Expressions:exs
-  			{:  :}
-  		;
-  		
-Expression ::= Expression:e1 CONCAT
-			{: RESULT = QQuery.; :} 
-		| Expression:e1 UNION  
-			{: RESULT = f; :}
-		| Expression:e1 SUBSTRACT  
-			{: RESULT = f; :}
-		| Expression:e1 INTER
-			{: RESULT = f; :}
-		| TILDE
-			{: RESULT = f; :}
-		| SLASH
-			{: RESULT = f; :}
-		|  DOT
-			{: RESULT = f; :}		
-		| TAG:t
-			{: RESULT = f; :}	
+//Consultas
+QQuery ::= ROOT expression:e
+  			{: RESULT = e; :} 
+  		| ROOT
+  		{: RESULT = new Expression(Singleton.getData(), null); :} 
 		;
 
-					
+expression ::= L_BRACKET expression:e R_BRACKET
+			{: RESULT = e; :} 
+		| expression:e1 CONCAT expression:e2
+			{: RESULT = new Expression(); RESULT.concat(e1,e2); :}
+		| expression:e1 UNION expression:e2
+			{: RESULT = new Expression(); RESULT.union(e1,e2); :}
+		| expression:e1 DIFFERENCE expression:e2
+			{: RESULT = new Expression(); RESULT.difference(e1,e2); :}
+		| expression:e1 INTERSECT expression:e2
+			{: RESULT = new Expression(); RESULT.intersect(e1,e2); :}
+		| expression:e SLASH
+			{: RESULT = new Expression(); RESULT.slash(e); :} 
+		| expression:e DOT
+			{: RESULT = new Expression(); RESULT.dot(e); :}
+		| expression:e IDS:s
+			{: RESULT = new Expression(); RESULT.searchTag(e, s); :} 
+		| expression:e TILDE IDS:s  //Agregar para que soprte cosas que no esten entre comillas
+			{: RESULT = new Expression(); RESULT.searchRegex(e, s); :}
+		| Qobject:qo
+			{: RESULT = new Expression(); RESULT.addQobjects(qo); :} 
+		;
