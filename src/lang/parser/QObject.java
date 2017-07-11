@@ -89,7 +89,7 @@ public class QObject {
 
 	@Override
 	public String toString() {
-		return "QObject [tag=" + tag + ", attributes=" + attributes + ", elements=" + elements + "]";
+		return "QObject [tag=" + tag + ", at=" + attributes + ", el=" + elements + "]";
 	}
 
 }

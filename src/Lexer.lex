@@ -32,7 +32,7 @@ NULL {return new Symbol(NULL, yytext());}
 [-] {return new Symbol(DIFFERENCE, yytext());}
 [~] {return new Symbol(VIBORA, yytext());}
 \"[^\"\n]*\" {return new Symbol(STRING, yytext());}
-(([^|$\n&()+-,:.])*|(['][^|$\n&()+-,:]*['])) {return new Symbol(IDS, yytext());}
+(([^|$\n&()+\-,:./])*|(['][^|$\n&()+\-,:/]*['])) {return new Symbol(IDS, yytext());}
 .	{ /* Fallback */
 		return new Symbol(error, "Unexpected input <"+ yytext() +">!"); 
 	} 

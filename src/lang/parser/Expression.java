@@ -1,8 +1,10 @@
 package lang.parser;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,7 +12,7 @@ public class Expression {
 	
 	@Override
 	public String toString() {
-		return "Expression [qobjects=" + qobjects + ", qattributes=" + qattributes + "]";
+		return "Expression [qobj=" + qobjects + ", qattr=" + qattributes + "]";
 	}
 
 	ArrayList<QObject> qobjects;
@@ -45,24 +47,49 @@ public class Expression {
 	}
 
 	public void concat(Expression e1, Expression e2) {//Contatena dos expresiones con repeticion
+		if(e1 == null || e2 == null){
+			qobjects = new ArrayList();
+			qattributes = new ArrayList();
+			return;
+		}
+		System.out.println(e1);
+		System.out.println(e2);
+
 		ArrayList<QObject> e1Elements = e1.getQobjects();
 		ArrayList<QAttribute> e1Attributes = e1.getQattributes();
 		ArrayList<QObject> e2Elements = e2.getQobjects();
 		ArrayList<QAttribute> e2Attributes = e2.getQattributes();
-		if(!e1Elements.isEmpty()){
+		if(e1Elements != null && !e1Elements.isEmpty()){
 			qobjects.addAll(e1Elements);
 			}
-		if(!e2Elements.isEmpty()){
+		if(e2Elements != null && !e2Elements.isEmpty()){
 			qobjects.addAll(e2Elements);
 			}
-		if(!e1Attributes.isEmpty()){
+		if(e1Attributes != null && !e1Attributes.isEmpty()){
 			qattributes.addAll(e1Attributes);
 			}
-		if(!e2Attributes.isEmpty()){
+		if(e2Attributes != null && !e2Attributes.isEmpty()){
 			qattributes.addAll(e2Attributes);
 			}
+		Set<QAttribute> hsa = new HashSet<>();
+		hsa.addAll(qattributes);
+		ArrayList<QAttribute> ala = new ArrayList();
+		ala.clear();
+		ala.addAll(hsa);
+		qattributes = ala;
+		Set<QObject> hso = new HashSet<>();
+		ArrayList<QObject> alo = new ArrayList();
+		hso.addAll(qobjects);
+		alo.clear();
+		alo.addAll(hso);
+		qobjects = alo;
 		}	
 	public void union(Expression e1, Expression e2){//Concatena dos expresiones sin repeticion
+		if(e1 == null || e2 == null){
+			qobjects = new ArrayList();
+			qattributes = new ArrayList();
+			return;
+		}
 		ArrayList<QObject> e1Elements = e1.getQobjects();
 		ArrayList<QAttribute> e1Attributes = e1.getQattributes();
 		ArrayList<QObject> e2Elements = e2.getQobjects();
@@ -101,25 +128,31 @@ public class Expression {
 		ArrayList<QAttribute> e1Attributes = e1.getQattributes();
 		ArrayList<QObject> e2Elements = e2.getQobjects();
 		ArrayList<QAttribute> e2Attributes = e2.getQattributes();		
-		if(!e2Elements.isEmpty() && !e1Elements.isEmpty()){
-			e1Elements.removeAll(e2Elements);
-			qobjects.addAll(e1Elements);
-			}else{
-				if(!e1Elements.isEmpty()){
-					qobjects.addAll(e1Elements);
-				}
-			}		
-		if(!e2Attributes.isEmpty() && !e1Attributes.isEmpty()){
-			e1Attributes.removeAll(e2Attributes);
-			qattributes.addAll(e1Attributes);
-			}else{
-				if(!e1Attributes.isEmpty()){
-					qattributes.addAll(e1Attributes);
-				}
+		if(e1Elements != null){
+			if(e2Elements != null){
+				e1Elements.removeAll(e2Elements);
 			}
+			qobjects = e1Elements;
+		}else{
+			qobjects = new ArrayList();
+		}
+		
+		if(e1Attributes != null){
+			if(e2Attributes != null){
+				e1Attributes.removeAll(e2Attributes);
+			}
+			qattributes = e1Attributes;
+		}else{
+			qattributes = new ArrayList();
+		}		
 	}
 	
 	public void intersect(Expression e1, Expression e2){//Devuelve la interseccion
+		if(e1 == null || e2 == null){
+			qobjects = new ArrayList();
+			qattributes = new ArrayList();
+			return;
+		}
 		ArrayList<QObject> e1Elements = e1.getQobjects();
 		ArrayList<QAttribute> e1Attributes = e1.getQattributes();
 		ArrayList<QObject> e2Elements = e2.getQobjects();
@@ -131,25 +164,44 @@ public class Expression {
 	}
 	
 	public void slash(Expression e){//Devuelve todos los elementos de los elementos de la Expression
+		if(e == null){
+			qobjects = new ArrayList();
+			qattributes = new ArrayList();
+			return;
+		}
 		ArrayList<QObject> eElements = e.getQobjects();
 		for(QObject qobjt: eElements){
-			if(!qobjt.getElements().isEmpty()){
+			if(qobjt.getElements() != null && !(qobjt.getElements().isEmpty())){
 				qobjects.addAll(qobjt.getElements());
 			}			
 		}
 	}
 	
 	public void dot(Expression e){//Por cada elemento del objeto crea un nuevo objeto con tag key y valor value
+		qattributes = new ArrayList();
+		if(e == null){
+			qobjects = new ArrayList();
+			qattributes = new ArrayList();
+			return;
+		}
 		ArrayList<QObject> eElements = e.getQobjects();
 		for(QObject qobjt: eElements){
 			Map<String,Object> mapa = qobjt.getAttributes();
-			for(String key: mapa.keySet()){
-				qattributes.add(new QAttribute(key,mapa.get(key)));
+			if(mapa != null){
+				for(String key: mapa.keySet()){
+					qattributes.add(new QAttribute(key,mapa.get(key)));
+				}
 			}
 		}
+		qobjects = new ArrayList();
 	}
 	
 	public void searchTag(Expression e,String tag){//Dado tag trae todos los objetos que cumplen con ese tag
+		if(e == null){
+			qobjects = new ArrayList();
+			qattributes = new ArrayList();
+			return;
+		}
 		ArrayList<QObject> eElements = e.getQobjects();
 		for(QObject qobjt: eElements){
 			if(qobjt.getTag().equals(tag)){
@@ -165,6 +217,12 @@ public class Expression {
 	}
 	 
 	public void searchRegex(Expression e,String regex){
+		
+		if(e == null){
+			qobjects = new ArrayList();
+			qattributes = new ArrayList();
+			return;
+		}
 		Pattern pat = Pattern.compile(regex);
 		ArrayList<QObject> eElements = e.getQobjects();
 		for(QObject qobjt: eElements){

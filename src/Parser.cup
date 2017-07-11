@@ -42,7 +42,7 @@ terminal String STRING;
 non terminal Expression QQuery;
 non terminal Expression expression;
 precedence left UNION, CONCAT, DIFFERENCE, INTERSECT;
-precedence left VIBORA, SLASH, DOT;
+precedence left IDS, VIBORA, SLASH, DOT;
 
 //PARTE 1
 
@@ -100,28 +100,34 @@ Value ::= TRUE:t
 
 //FIN PARTE 1
 //Consultas
-QQuery ::= ROOT expression:e
+QQuery ::= expression:e
   			{: RESULT = e; :} 
-  		| ROOT
-  		{: RESULT = Singleton.getData(); :} 
 		;
 
 expression ::= L_BRACKET expression:e R_BRACKET
 			{: RESULT = e; :} 
 		| expression:e1 CONCAT expression:e2
-			{: RESULT = new Expression(); RESULT.concat(e1,e2); :}
+			{: System.out.println("contact");RESULT = new Expression(); RESULT.concat(e1,e2); :}
 		| expression:e1 UNION expression:e2
-			{: RESULT = new Expression(); RESULT.union(e1,e2); :}
+			{: System.out.println("union");RESULT = new Expression(); RESULT.union(e1,e2); :}
 		| expression:e1 DIFFERENCE expression:e2
-			{: RESULT = new Expression(); RESULT.difference(e1,e2); :}
+			{: System.out.println("difference");RESULT = new Expression(); RESULT.difference(e1,e2); :}
 		| expression:e1 INTERSECT expression:e2
-			{: RESULT = new Expression(); RESULT.intersect(e1,e2); :}
+			{: System.out.println("intersect");RESULT = new Expression(); RESULT.intersect(e1,e2); :}
+		|expression:e1 SLASH
+			{:System.out.println("slash"); RESULT = new Expression(); RESULT.slash(e1); :} 
+		|expression:e1 DOT
+			{: System.out.println("dot");RESULT = new Expression(); RESULT.dot(e1); :} 
+		| expression:e1  IDS:s
+			{: System.out.println("ids");RESULT = new Expression(); RESULT.searchTag(e1, s); :} 
 		| SLASH
 			{: RESULT = new Expression(); RESULT.slash(Singleton.getRootData()); :} 
 		|  DOT
 			{: RESULT = new Expression(); RESULT.dot(Singleton.getRootData()); :}
+		|  ROOT
+			{: RESULT =Singleton.getRootData(); :}
 		|  IDS:s
-			{: RESULT = new Expression(); RESULT.searchTag(Singleton.getRootData(), s); :} 
+			{: System.out.println("ids3");RESULT = new Expression(); RESULT.searchTag(Singleton.getRootData(), s); :} 
 		| expression:e VIBORA IDS:s  //Agregar para que soprte cosas que no esten entre comillas
 			{: RESULT = new Expression(); RESULT.searchRegex(e, s); :}
 		;
