@@ -9,8 +9,10 @@ public class QAttribute {
 	
 	@Override
 	public String toString() {
-		return "QAttr [tag=" + tag + ", obj=" + obj + "]";
+		return tag + ":" + obj ;
 	}
+	
+	
 
 	public QAttribute(String tag, Object obj) {
 		super();

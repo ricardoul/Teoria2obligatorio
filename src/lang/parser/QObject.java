@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class QObject {
 	String tag;
-	Map<String,Object> attributes;
+	Map<String,Object> attributes = new HashMap<String,Object>();
 	ArrayList<QObject> elements;
 	
 	@Override
@@ -59,7 +59,7 @@ public class QObject {
 	}
 
 	public void setAttributes(Map<String, Object> attributes) {
-		this.attributes = attributes;
+			this.attributes = attributes;
 	}
 
 	public ArrayList<QObject> getElements() {
@@ -71,7 +71,10 @@ public class QObject {
 	}
 	
 	public void addAttributes(Map<String, Object>  attributes) {
-		this.attributes.putAll(attributes);
+		if(attributes != null){
+			System.out.println("attr"+attributes + "" +"this attr"+ this.attributes);
+			this.attributes.putAll(attributes);
+		}
 	}
 	
 	public void setElements(ArrayList<QObject> elements) {
@@ -87,9 +90,41 @@ public class QObject {
 		this.elements = elements;
 	}
 
-	@Override
-	public String toString() {
+	public String toStringEval() {
 		return "QObject [tag=" + tag + ", at=" + attributes + ", el=" + elements + "]";
+	}
+	public String toString() {
+		System.out.println("entro"+ this.attributes.keySet());
+		String res = tag+"(";
+		if(elements != null){
+			for(QObject qs: elements){
+				res+=qs.toString()+",";
+			}
+		}
+		String aux = "";
+		if(attributes != null){
+			for(String qa: attributes.keySet()){
+				aux+=qa.toString()+":"+attributes.get(qa).toString()+",";
+			}
+			if(aux.length() >0){
+				aux = aux.substring(0, aux.length()-1);
+			}
+		}else{
+			if(res.length() >0){
+				res =res.substring(0, res.length()-1);
+			}
+		}
+		if(res.length()>0 && aux.length() == 0){
+			System.out.println("mira res"+res);
+			String res2= res.substring(res.length()-1, res.length());
+			if(res2.equals(",")){
+				res = res.substring(0, res.length()-1);
+			}
+		}
+		
+
+		
+		return res+aux+")";
 	}
 
 }

@@ -31,14 +31,14 @@ non terminal ArrayList QElement;
 non terminal Map<String,Object> QAttribute;
 non terminal Object Value;
 terminal COMMA, COLON, NULL;
-terminal String IDS;
+terminal String IDS, IDSEARCH;
 terminal Boolean TRUE, FALSE;
 terminal Double DOUBLE;
 
 //PARTE 2
 // Rules Data 
 terminal ROOT, L_BRACKET, R_BRACKET, CONCAT, UNION, DIFFERENCE, INTERSECT, SLASH, DOT,VIBORA;
-terminal String STRING;
+terminal String STRING, REGEX;
 non terminal Expression QQuery;
 non terminal Expression expression;
 precedence left UNION, CONCAT, DIFFERENCE, INTERSECT;
@@ -61,6 +61,10 @@ QProgram ::= QObject:q
 QObject ::= IDS:t L_BRACKET QComponents:qes R_BRACKET
   			{: RESULT = qes;  RESULT.setTag(t);:}
   			| IDS:t L_BRACKET R_BRACKET
+  			{:RESULT = new QObject(); RESULT.setTag(t); :}
+  			| IDSEARCH:t L_BRACKET R_BRACKET
+  			{:RESULT = new QObject(); RESULT.setTag(t); :}
+  			| IDSEARCH:t L_BRACKET QComponents:qes R_BRACKET
   			{:RESULT = new QObject(); RESULT.setTag(t); :}
   		;
   
@@ -107,27 +111,41 @@ QQuery ::= expression:e
 expression ::= L_BRACKET expression:e R_BRACKET
 			{: RESULT = e; :} 
 		| expression:e1 CONCAT expression:e2
-			{: System.out.println("contact");RESULT = new Expression(); RESULT.concat(e1,e2); :}
+			{:RESULT = new CONCAT(e1,e2); :}
 		| expression:e1 UNION expression:e2
-			{: System.out.println("union");RESULT = new Expression(); RESULT.union(e1,e2); :}
+			{: RESULT = new UNION(e1,e2); :}
 		| expression:e1 DIFFERENCE expression:e2
-			{: System.out.println("difference");RESULT = new Expression(); RESULT.difference(e1,e2); :}
+			{:RESULT = new DIFFERENCE(e1,e2); :}
 		| expression:e1 INTERSECT expression:e2
-			{: System.out.println("intersect");RESULT = new Expression(); RESULT.intersect(e1,e2); :}
+			{:RESULT = new INTERSECTION(e1,e2); :}
 		|expression:e1 SLASH
-			{:System.out.println("slash"); RESULT = new Expression(); RESULT.slash(e1); :} 
+			{:RESULT = new SLASH(e1); :} 
 		|expression:e1 DOT
-			{: System.out.println("dot");RESULT = new Expression(); RESULT.dot(e1); :} 
+			{: RESULT = new DOT(e1); :} 
 		| expression:e1  IDS:s
-			{: System.out.println("ids");RESULT = new Expression(); RESULT.searchTag(e1, s); :} 
+			{: RESULT = new IDS(e1, s);  :} 
+		| expression:e1  IDSEARCH:s
+			{: RESULT = new IDS(e1, s);  :} 
 		| SLASH
-			{: RESULT = new Expression(); RESULT.slash(Singleton.getRootData()); :} 
+			{: RESULT = new SLASH(Singleton.getRootData()); :} 
 		|  DOT
-			{: RESULT = new Expression(); RESULT.dot(Singleton.getRootData()); :}
+			{: RESULT = new DOT(Singleton.getRootData());  :}
 		|  ROOT
-			{: RESULT =Singleton.getRootData(); :}
+			{: RESULT =new ROOT(Singleton.getRootData()); :}
 		|  IDS:s
-			{: System.out.println("ids3");RESULT = new Expression(); RESULT.searchTag(Singleton.getRootData(), s); :} 
-		| expression:e VIBORA IDS:s  //Agregar para que soprte cosas que no esten entre comillas
-			{: RESULT = new Expression(); RESULT.searchRegex(e, s); :}
+			{: RESULT = new IDS(Singleton.getRootData(), s); :} 
+		|  VIBORA REGEX:s
+			{: RESULT = new VIBORA(Singleton.getRootData(), s); :} 
+		|  VIBORA IDS:s
+			{: RESULT = new VIBORA(Singleton.getRootData(), s); :} 
+		|  VIBORA IDSEARCH:s
+			{: RESULT = new VIBORA(Singleton.getRootData(), s); :} 
+		| expression:e VIBORA REGEX:r  //Agregar para que soprte cosas que no esten entre comillas
+			{: RESULT = new VIBORA(e, r);  :}
+		| expression:e VIBORA IDSEARCH:r  //Agregar para que soprte cosas que no esten entre comillas
+			{: RESULT = new VIBORA(e, r);  :}
+		| expression:e VIBORA IDS:r  //Agregar para que soprte cosas que no esten entre comillas
+			{: RESULT = new VIBORA(e, r);  :}
 		;
+		
+		
