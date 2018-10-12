@@ -5,7 +5,7 @@ import java.io.*;
 import java_cup.runtime.*;
 import lang.parser.*;
 
-/** ImplementaciÛn del lenguaje con la siguiente gram·tica:
+/** Implementaci√≥n del lenguaje con la siguiente gram√°tica:
 
 ```
 lines : lines line ;
@@ -22,6 +22,7 @@ num : [0-9]+ ;
  */
 public class Main {
 
+	// Shows token info
 	public static void showTokens(String input) throws Exception {
 		Lexer lexer = Parser.makeLexer(input);
 		Symbol token = lexer.next_token();
@@ -32,6 +33,7 @@ public class Main {
 		System.out.println("FIN");
 	}
 	
+	// Shows the results of the input 
 	public static void showParse(String input) throws Exception {
 		Parser parser = Parser.makeParser(input);
 		Symbol result = parser.parse();
